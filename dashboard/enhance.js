@@ -139,7 +139,14 @@
         ? action('Resume automation', 'Unpause the scheduler', '#automation-toggle', 'resume unpause automation play')
         : action('Pause automation', 'Halt scheduled generation', '#automation-toggle', 'pause halt automation stop'),
       action('Refresh dashboard data', 'Pull latest state now', '#refresh-button', 'refresh reload sync data'),
-      action('Set dashboard API key', 'Store access key in this browser', '#api-key-button', 'api key auth credentials')
+      {
+        group: 'Actions', icon: 'action', label: 'Set dashboard API key',
+        hint: 'Paste access key in Channel setup — stays in this browser', keywords: 'api key auth credentials',
+        run: () => {
+          window.switchView('settings');
+          setTimeout(() => { const el = $('#api-key-input'); if (el) el.focus(); }, 120);
+        }
+      }
     );
     return cmds;
   }

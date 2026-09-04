@@ -24,9 +24,32 @@ function apiKey() {
   return localStorage.getItem('yaa_api_key') || '';
 }
 
+function saveDashboardApiKey() {
+  const input = $('#api-key-input');
+  const key = input ? input.value.trim() : '';
+  if (key) {
+    localStorage.setItem('yaa_api_key', key);
+    input.placeholder = 'Key saved in this browser — paste a new key to replace it';
+    input.value = '';
+    showToast('Dashboard API key saved in this browser.');
+  } else {
+    localStorage.removeItem('yaa_api_key');
+    if (input) input.placeholder = 'Paste your OpenRouter (or API_KEY) value here — stays in this browser only';
+    showToast('Dashboard API key cleared from this browser.', 'warning');
+  }
+}
+
 function requestApiKey() {
+  const input = $('#api-key-input');
+  if (input && input.value.trim()) {
+    localStorage.setItem('yaa_api_key', input.value.trim());
+    return input.value.trim();
+  }
   const key = prompt('Enter the API_KEY value from your .env. It stays in this browser only.', apiKey());
-  if (key !== null) localStorage.setItem('yaa_api_key', key.trim());
+  if (key !== null) {
+    if (key.trim()) localStorage.setItem('yaa_api_key', key.trim());
+    else localStorage.removeItem('yaa_api_key');
+  }
   return key;
 }
 
@@ -764,6 +787,13 @@ function populateSettings(profile = {}, settings = {}, providers = []) {
   }
   $('#approval-required').checked = settings.approval_required !== 'false';
   $('#notifications-enabled').checked = settings.notification_enabled !== 'false';
+  const apiKeyInput = $('#api-key-input');
+  if (apiKeyInput && document.activeElement !== apiKeyInput) {
+    apiKeyInput.value = '';
+    apiKeyInput.placeholder = apiKey()
+      ? 'Key saved in this browser — paste a new key to replace it'
+      : 'Paste your OpenRouter (or API_KEY) value here — stays in this browser only';
+  }
   const videoMapping = {
     videoProvider: settings.video_provider || 'slideshow',
     videoGenerationMode: settings.video_generation_mode || 'hybrid',
@@ -1709,9 +1739,20 @@ $('#profile-form').addEventListener('submit', async event => {
   } catch (_error) { /* toast already shown */ }
 });
 
-$('#api-key-button').addEventListener('click', () => {
-  if (requestApiKey() !== null) showToast('Dashboard API key saved in this browser.');
-});
+$('#api-key-button').addEventListener('click', saveDashboardApiKey);
+
+const apiKeyInput = $('#api-key-input');
+if (apiKeyInput) {
+  apiKeyInput.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      saveDashboardApiKey();
+    }
+  });
+  apiKeyInput.placeholder = apiKey()
+    ? 'Key saved in this browser — paste a new key to replace it'
+    : 'Paste your OpenRouter (or API_KEY) value here — stays in this browser only';
+}
 
 const initialView = location.hash.slice(1);
 if (['overview', 'operator', 'pipeline', 'calendar', 'analytics', 'engagement', 'readiness', 'settings'].includes(initialView)) switchView(initialView);

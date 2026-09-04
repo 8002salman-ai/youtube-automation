@@ -280,7 +280,10 @@
             <label><span>Clip duration</span><input name="videoClipDuration" type="number" min="3" max="30" step="1"></label>
             <label><span>Paid seconds cap</span><input name="videoMaxGeneratedSeconds" type="number" min="0" max="600" step="1"><small>Maximum provider-generated seconds per production.</small></label>
           </div>
-          <div class="form-actions"><button type="submit" class="button primary">Save channel setup</button><button id="api-key-button" type="button" class="button secondary">Set dashboard API key</button></div>
+          <div class="form-grid api-key-field">
+            <label class="full-row"><span>Dashboard API key</span><input id="api-key-input" type="password" name="apiKey" autocomplete="off" spellcheck="false" placeholder="Paste your OpenRouter (or API_KEY) value here — stays in this browser only"><small>Used for protected dashboard actions. Stored only in this browser's localStorage — never sent to the repo or shared.</small></label>
+          </div>
+          <div class="form-actions"><button type="submit" class="button primary">Save channel setup</button><button id="api-key-button" type="button" class="button secondary">Save dashboard API key</button></div>
         </form>
       </section>
     </main>
